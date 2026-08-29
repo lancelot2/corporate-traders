@@ -51,15 +51,15 @@ export function Leaderboard() {
 
   return (
     <>
-      <main className="flex-1 px-5 pb-8">
+      <main className="mx-auto w-full max-w-[1180px] flex-1 px-5 pb-8 md:px-8 lg:px-10">
         {/* brand header */}
-        <header className="flex flex-col items-center pt-10 text-center">
+        <header className="flex flex-col items-center pt-10 text-center md:items-start md:pt-14 md:text-left">
           <Logo />
           <div className="mt-4 flex items-center gap-1.5">
             <h1 className="text-[1.55rem] font-bold tracking-tight text-ink">Insider Index</h1>
             <BlueCheck className="h-[1.15rem] w-[1.15rem]" />
           </div>
-          <p className="mt-2 max-w-[19rem] text-[0.92rem] leading-snug text-ink-soft">
+          <p className="mt-2 max-w-[29rem] text-[0.92rem] leading-snug text-ink-soft">
             Track and copy the disclosed trades of directors, CEOs, and CFOs — ranked
             like traders.
           </p>
@@ -72,15 +72,15 @@ export function Leaderboard() {
         </header>
 
         {/* controls */}
-        <div className="mt-8 space-y-4">
+        <div className="mt-8 space-y-4 md:grid md:grid-cols-[minmax(0,1.2fr)_minmax(19rem,0.8fr)] md:gap-x-10 md:gap-y-4 md:space-y-0">
           <SearchField value={query} onChange={setQuery} />
-          <div>
+          <div className="md:col-span-2">
             <ControlLabel>Rank by</ControlLabel>
             <div className="no-scrollbar -mx-5 overflow-x-auto px-5">
               <SortPills active={mode} onChange={setMode} />
             </div>
           </div>
-          <div>
+          <div className="md:col-span-2">
             <ControlLabel>Sector</ControlLabel>
             <div className="no-scrollbar -mx-5 overflow-x-auto px-5">
               <SectorFilter active={sector} onChange={setSector} />
@@ -96,7 +96,7 @@ export function Leaderboard() {
 
         {/* list */}
         {results.length ? (
-          <ol>
+          <ol className="md:grid md:grid-cols-2 md:gap-x-5">
             {results.map((director, i) => (
               <li
                 key={director.id}

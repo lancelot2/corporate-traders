@@ -11,7 +11,7 @@ export function Watchlist() {
 
   return (
     <>
-      <main className="flex-1 px-5 pb-8 pt-12">
+      <main className="mx-auto w-full max-w-[1180px] flex-1 px-5 pb-8 pt-12 md:px-8 md:pt-14 lg:px-10">
         <h1 className="text-[1.75rem] font-bold tracking-tight text-ink">Watching</h1>
         <p className="mt-1 text-[0.92rem] text-ink-soft">
           {watched.length ? `${watched.length} insider${watched.length > 1 ? 's' : ''} on your list.` : 'Insiders you tap the star on show up here.'}
@@ -36,7 +36,7 @@ export function Watchlist() {
               Nothing here yet. Open any insider and tap the star to start watching.
             </p>
             <Link
-              to="/"
+              to="/discover"
               className="mt-6 rounded-full bg-btn px-5 py-3 text-[0.92rem] font-semibold text-btn-fg"
             >
               Discover insiders

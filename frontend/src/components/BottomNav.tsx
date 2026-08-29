@@ -10,6 +10,14 @@ function DiscoverIcon() {
   );
 }
 
+function HomeIcon() {
+  return (
+    <svg viewBox="0 0 24 24" className="h-[1.35rem] w-[1.35rem]" fill="none" stroke="currentColor" strokeWidth={1.9} aria-hidden>
+      <path d="m4 10.5 8-6.5 8 6.5V19a1 1 0 0 1-1 1h-4.5v-5.5h-5V20H5a1 1 0 0 1-1-1z" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
 function WatchIcon() {
   return (
     <svg viewBox="0 0 24 24" className="h-[1.35rem] w-[1.35rem]" fill="none" stroke="currentColor" strokeWidth={1.7} aria-hidden>
@@ -56,9 +64,10 @@ function Tab({
 export function BottomNav() {
   const { count } = useWatchlist();
   return (
-    <nav className="sticky bottom-0 z-30 mt-auto border-t border-line bg-app/90 backdrop-blur-md">
-      <div className="flex items-stretch px-8 pb-[max(0.5rem,env(safe-area-inset-bottom))] pt-1.5">
-        <Tab to="/" label="Discover" icon={<DiscoverIcon />} />
+    <nav className="sticky bottom-0 z-30 mt-auto border-t border-line bg-app/90 backdrop-blur-md md:hidden">
+      <div className="flex items-stretch px-5 pb-[max(0.5rem,env(safe-area-inset-bottom))] pt-1.5">
+        <Tab to="/" label="Home" icon={<HomeIcon />} />
+        <Tab to="/discover" label="Discover" icon={<DiscoverIcon />} />
         <Tab to="/watchlist" label="Watching" icon={<WatchIcon />} badge={count} />
       </div>
     </nav>

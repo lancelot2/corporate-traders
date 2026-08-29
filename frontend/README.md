@@ -29,6 +29,70 @@ npm run dev
 
 Then open the printed local URL. `npm run build` produces a static bundle.
 
+## Generate image assets with fal
+
+Install `@fal-ai/client`, then provide `FAL_KEY` in your terminal session or in
+an untracked `frontend/.env.local` file. Never expose the key through a
+`VITE_` environment variable because browser code would receive it.
+
+```bash
+export FAL_KEY="your-key"
+npm run generate:image -- "A cinematic editorial photograph of a modern city skyline at sunrise" homepage-hero
+```
+
+Generated files are written to `public/generated/` and can be referenced in
+the app as `/generated/homepage-hero.jpg`. Set `FAL_IMAGE_MODEL` to use a
+different compatible fal image endpoint; the default is `fal-ai/fast-sdxl`.
+
+Reusable prompt directions live in [`scripts/image-presets.mjs`](scripts/image-presets.mjs).
+The `simpson-headshot` preset uses `bytedance/seedream/v5/lite/edit` and needs
+a reference image:
+
+```bash
+npm run generate:image -- --preset simpson-headshot --input ./reference-photo.jpg --output elena-cho
+```
+
+The reference image is uploaded directly to fal for the generation request;
+the resulting asset is saved as `public/generated/elena-cho.png` (or `.jpg`).
+
+### Public-figure headshots
+
+Use the Wikimedia Commons candidate finder before generating a public figure's
+headshot. It writes the original image URL and available attribution/license
+metadata to a review file; review the candidates before selecting one.
+
+```bash
+cp headshots.people.example.json people.json
+# Edit people.json with the public figures you want to process.
+npm run find:headshots -- ./people.json
+```
+
+When a source is approved, pass its `sourceUrl` into the headshot preset:
+
+```bash
+npm run generate:image -- --preset simpson-headshot --input "https://commons.wikimedia.org/example-source.jpg" --output person-name
+```
+
+Do not use this workflow to imply endorsement or to misrepresent a person. Keep
+the generated-image file alongside the source record so attribution and origin
+remain available.
+
+### Supabase-backed discovery
+
+For the production `public.insiders` table, first execute
+[`scripts/sql/add-insider-headshot-columns.sql`](scripts/sql/add-insider-headshot-columns.sql)
+in the Supabase SQL Editor. Then use the service-role credentials in
+`frontend/.env.local` and run:
+
+```bash
+npm run supabase:find-headshots
+```
+
+The command reads `full_name` directly from rows without a source image,
+selects a Wikimedia Commons candidate, and saves the candidate list, source
+URL, and license metadata back to the same insider row with a
+`source_needs_review` status. It does not call fal or generate an image.
+
 ## Screens
 
 - **Discover (`/`)** — brand header, a search field (by name or ticker), filter

@@ -4,8 +4,8 @@ import type { ReactNode } from 'react';
 // the product actually runs — rather than stretching across a desktop page.
 export function AppShell({ children }: { children: ReactNode }) {
   return (
-    <div className="flex min-h-dvh justify-center bg-bg">
-      <div className="relative flex min-h-dvh w-full max-w-[460px] flex-col bg-app sm:border-x sm:border-line">
+    <div className="min-h-dvh bg-bg md:bg-app">
+      <div className="relative flex min-h-dvh min-w-0 w-full flex-col bg-app">
         {children}
       </div>
     </div>

@@ -6,7 +6,8 @@ import { Leaderboard } from './pages/Leaderboard';
 import { DirectorDetail } from './pages/DirectorDetail';
 import { Watchlist } from './pages/Watchlist';
 import { NotFound } from './pages/NotFound';
-import { HelloWorld } from './pages/HelloWorld';
+import { Home } from './pages/Home';
+import { DesktopNav } from './components/DesktopNav';
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -22,11 +23,12 @@ export default function App() {
       <WatchlistProvider>
         <ScrollToTop />
         <AppShell>
+          <DesktopNav />
           <Routes>
-            <Route path="/" element={<Leaderboard />} />
+            <Route path="/" element={<Home />} />
+            <Route path="/discover" element={<Leaderboard />} />
             <Route path="/director/:id" element={<DirectorDetail />} />
             <Route path="/watchlist" element={<Watchlist />} />
-            <Route path="/hello-world" element={<HelloWorld />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </AppShell>
