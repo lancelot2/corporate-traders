@@ -6,6 +6,7 @@ import { Leaderboard } from './pages/Leaderboard';
 import { DirectorDetail } from './pages/DirectorDetail';
 import { Watchlist } from './pages/Watchlist';
 import { NotFound } from './pages/NotFound';
+import { HelloWorld } from './pages/HelloWorld';
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -25,6 +26,7 @@ export default function App() {
             <Route path="/" element={<Leaderboard />} />
             <Route path="/director/:id" element={<DirectorDetail />} />
             <Route path="/watchlist" element={<Watchlist />} />
+            <Route path="/hello-world" element={<HelloWorld />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </AppShell>
