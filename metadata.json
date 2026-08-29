@@ -1,0 +1,44 @@
+{
+  "cli_version": "0.10.3",
+  "checkpoint_id": "01M16YCGADCA16AAQ3W0DQXMCF",
+  "strategy": "manual-commit",
+  "branch": "main",
+  "checkpoints_count": 21,
+  "files_touched": [
+    "frontend/README.md",
+    "frontend/headshots.people.example.json",
+    "frontend/package-lock.json",
+    "frontend/package.json",
+    "frontend/scripts/find-headshots.mjs",
+    "frontend/scripts/find-supabase-headshots.mjs",
+    "frontend/scripts/generate-image.mjs",
+    "frontend/scripts/image-presets.mjs",
+    "frontend/scripts/sql/add-insider-headshot-columns.sql",
+    "frontend/scripts/supabase-client.mjs",
+    "frontend/scripts/wikimedia-commons.mjs",
+    "frontend/src/App.tsx",
+    "frontend/src/components/AppShell.tsx",
+    "frontend/src/components/BottomNav.tsx",
+    "frontend/src/components/DesktopNav.tsx",
+    "frontend/src/pages/HelloWorld.tsx",
+    "frontend/src/pages/Home.tsx",
+    "frontend/src/pages/Leaderboard.tsx",
+    "frontend/src/pages/Watchlist.tsx"
+  ],
+  "sessions": [
+    {
+      "metadata": "/0/metadata.json",
+      "transcript": "/0/full.jsonl",
+      "compact_transcript": "/0/transcript.jsonl",
+      "content_hash": "/0/content_hash.txt",
+      "prompt": "/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 291323,
+    "cache_creation_tokens": 0,
+    "cache_read_tokens": 10048256,
+    "output_tokens": 54824,
+    "api_call_count": 98
+  }
+}
