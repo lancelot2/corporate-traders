@@ -138,3 +138,7 @@ SUPABASE_SERVICE_ROLE_KEY shoel be the secret or public one?
 ---
 
 I did update the env
+
+---
+
+commit and push
