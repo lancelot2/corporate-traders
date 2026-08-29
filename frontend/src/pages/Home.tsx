@@ -13,11 +13,11 @@ import { rankDirectors } from '../lib/sort';
 
 function Mark() {
   return (
-    <div className="grid h-11 w-11 place-items-center rounded-2xl bg-btn shadow-card">
+    <div className="grid h-11 w-11 place-items-center rounded-2xl border-2 border-black bg-[#FED90F] shadow-card">
       <svg viewBox="0 0 32 32" className="h-[1.35rem] w-[1.35rem]" aria-hidden>
-        <rect x="6" y="18" width="4.5" height="8" rx="1.2" fill="var(--btn-fg)" />
-        <rect x="13.75" y="12" width="4.5" height="14" rx="1.2" fill="var(--btn-fg)" />
-        <rect x="21.5" y="6" width="4.5" height="20" rx="1.2" fill="var(--btn-fg)" />
+        <rect x="6" y="18" width="4.5" height="8" rx="1.2" fill="#000" />
+        <rect x="13.75" y="12" width="4.5" height="14" rx="1.2" fill="#000" />
+        <rect x="21.5" y="6" width="4.5" height="20" rx="1.2" fill="#000" />
       </svg>
     </div>
   );
@@ -31,51 +31,14 @@ function Arrow() {
   );
 }
 
-function StackedProfiles({ profiles, total }: { profiles: Director[]; total: number }) {
-  return (
-    <div className="relative mx-auto h-[28rem] w-full max-w-[31rem] sm:h-[31rem]">
-      {profiles.map((director, index) => (
-        <Link
-          key={director.id}
-          to={`/director/${director.id}`}
-          className={`absolute grid w-[88%] grid-cols-[auto_1fr_auto] items-center gap-3 rounded-2xl border border-white/10 bg-white px-4 py-4 text-ink shadow-[0_18px_45px_-26px_rgba(0,0,0,0.5)] transition-transform hover:-translate-y-1 ${
-            index === 0 ? 'left-0 top-2 z-30' : index === 1 ? 'right-0 top-[8.2rem] z-20' : 'left-0 top-[14.4rem] z-10'
-          }`}
-          style={{ transform: `rotate(${index === 0 ? '-3.5deg' : index === 1 ? '3.5deg' : '-1.5deg'})` }}
-        >
-          <Avatar
-            name={director.name}
-            seed={director.id}
-            size="sm"
-            company={director.company}
-            ticker={director.ticker}
-            photoUrl={director.headshotUrl}
-          />
-          <div className="min-w-0">
-            <p className="truncate text-[0.98rem] font-bold tracking-tight">{director.name}</p>
-            <p className="truncate text-[0.73rem] text-ink-soft">{director.title} · {director.company}</p>
-          </div>
-          <span className="tnum text-[0.92rem] font-semibold text-ink">
-            {formatTradeValue(director.totalTradeValueUsd)}
-          </span>
-        </Link>
-      ))}
-      <div className="absolute bottom-0 right-0 rounded-2xl bg-btn px-5 py-4 text-btn-fg shadow-card">
-        <p className="text-[0.65rem] font-medium text-white/60">Watch the moves that matter</p>
-        <p className="mt-1 text-[0.95rem] font-semibold">{total} tracked profiles</p>
-      </div>
-    </div>
-  );
-}
-
 function FeatureCard({ director }: { director: Director }) {
   return (
-    <Link to={`/director/${director.id}`} className="group flex min-h-[16rem] flex-col justify-between rounded-2xl bg-surface-2 p-5 transition-colors hover:bg-[#ececf0] md:p-6">
+    <Link to={`/director/${director.id}`} className="group flex min-h-[16rem] flex-col rounded-2xl bg-surface-2 p-5 transition-colors hover:bg-[#ececf0] md:p-6">
       <div className="flex items-start justify-between gap-4">
         <Avatar
           name={director.name}
           seed={director.id}
-          size="lg"
+          size="xxl"
           company={director.company}
           ticker={director.ticker}
           photoUrl={director.headshotUrl}
@@ -84,7 +47,7 @@ function FeatureCard({ director }: { director: Director }) {
           {formatTradeValue(director.totalTradeValueUsd)}
         </span>
       </div>
-      <div className="mt-10">
+      <div className="mt-4">
         <p className="text-[0.76rem] font-medium text-ink-soft">{director.title}</p>
         <p className="mt-1 text-[1.28rem] font-bold tracking-tight text-ink">{director.name}</p>
         <div className="mt-3 flex items-center justify-between border-t border-line-strong pt-3 text-[0.78rem] text-ink-soft">
@@ -144,10 +107,16 @@ export function Home() {
           <div className="max-w-[42rem]">
             <h1 className="text-[clamp(3rem,6.2vw,5.85rem)] font-bold leading-[0.91] tracking-[-0.04em] text-ink">Find the people moving their own companies.</h1>
             <p className="mt-7 max-w-[34rem] text-[1rem] leading-relaxed text-ink-soft md:text-[1.13rem]">Explore real, disclosed profiles of directors, CEOs, and CFOs through the trades they've filed.</p>
-            <div className="mt-8 flex flex-col gap-3 sm:flex-row"><Link to="/discover" className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-btn px-5 text-[0.92rem] font-semibold text-btn-fg transition-transform hover:scale-[1.02] active:scale-[0.98]">Explore profiles <Arrow /></Link><a href="#how-it-works" className="inline-flex min-h-12 items-center justify-center rounded-xl border border-line-strong px-5 text-[0.92rem] font-semibold text-ink transition-colors hover:bg-surface-2">How Insider Index works</a></div>
+            <div className="mt-8 flex flex-col gap-3 sm:flex-row"><Link to="/discover" className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl border-2 border-black bg-[#FED90F] px-5 text-[0.92rem] font-semibold text-black shadow-[3px_3px_0_#07070a] transition-transform hover:-translate-y-0.5 active:translate-y-0 active:shadow-none">Explore profiles <Arrow /></Link><a href="#how-it-works" className="inline-flex min-h-12 items-center justify-center rounded-xl border-2 border-black bg-[#FED90F] px-5 text-[0.92rem] font-semibold text-black shadow-[3px_3px_0_#07070a] transition-transform hover:-translate-y-0.5 active:translate-y-0 active:shadow-none">How Insider Index works</a></div>
             <p className="mt-5 text-[0.71rem] leading-relaxed text-ink-faint">Trades, companies, and people are real, disclosed data. Watcher counts are simulated estimates. Titles are shown as a general placeholder.</p>
           </div>
-          {directorsState.status === 'ready' && <StackedProfiles profiles={featured} total={directors.length} />}
+          <div className="mx-auto w-full max-w-[34rem] overflow-hidden rounded-[1.5rem] bg-surface-2 shadow-[0_24px_60px_-28px_rgba(0,0,0,0.42)] lg:w-[min(28rem,calc((100vh-10rem)*0.747))]">
+            <img
+              src="/images/fortune-festival-hero.png"
+              alt="A colorful illustrated fortune festival celebrating market growth and wealth"
+              className="aspect-[0.747/1] h-full w-full object-cover"
+            />
+          </div>
         </section>
 
         {directorsState.status === 'loading' && <LoadingState label="Loading insiders…" />}
@@ -164,7 +133,7 @@ export function Home() {
             </section>
 
             <section className="grid gap-16 border-t border-line py-16 md:py-24 lg:grid-cols-2 lg:gap-20">
-              <div><h2 className="text-[clamp(2rem,3.4vw,3.15rem)] font-bold tracking-[-0.035em] text-ink">Top by amount</h2><p className="mt-2 max-w-[27rem] text-[0.94rem] text-ink-soft">Ranked by total disclosed dollar value of tracked trades.</p><div className="mt-7"><RankedList people={topByAmount} metric="amount" /></div><Link to="/discover" className="mt-5 inline-flex items-center gap-2 text-[0.84rem] font-semibold text-ink underline decoration-line-strong underline-offset-4">See full leaderboard <Arrow /></Link></div>
+              <div><h2 className="text-[clamp(2rem,3.4vw,3.15rem)] font-bold tracking-[-0.035em] text-ink">Top insiders by amount</h2><p className="mt-2 max-w-[27rem] text-[0.94rem] text-ink-soft">Ranked by total disclosed dollar value of tracked trades.</p><div className="mt-7"><RankedList people={topByAmount} metric="amount" /></div><Link to="/discover" className="mt-5 inline-flex items-center gap-2 text-[0.84rem] font-semibold text-ink underline decoration-line-strong underline-offset-4">See full leaderboard <Arrow /></Link></div>
               <div><h2 className="text-[clamp(2rem,3.4vw,3.15rem)] font-bold tracking-[-0.035em] text-ink">Most watched</h2><p className="mt-2 max-w-[27rem] text-[0.94rem] text-ink-soft">The profiles the Insider Index community keeps close (estimated watcher counts).</p><div className="mt-7"><RankedList people={mostWatched} metric="watching" /></div><Link to="/discover" className="mt-5 inline-flex items-center gap-2 text-[0.84rem] font-semibold text-ink underline decoration-line-strong underline-offset-4">Explore the index <Arrow /></Link></div>
             </section>
 

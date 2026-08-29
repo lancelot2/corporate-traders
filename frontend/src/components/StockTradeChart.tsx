@@ -66,8 +66,8 @@ export function StockTradeChart({
         <AreaChart data={data} margin={{ top: 24, right: 12, bottom: 0, left: -6 }}>
           <defs>
             <linearGradient id="priceFill" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="var(--price-line)" stopOpacity={0.16} />
-              <stop offset="100%" stopColor="var(--price-line)" stopOpacity={0} />
+              <stop offset="0%" stopColor="#FED90F" stopOpacity={0.32} />
+              <stop offset="100%" stopColor="#FED90F" stopOpacity={0} />
             </linearGradient>
           </defs>
           <CartesianGrid stroke="var(--grid-line)" vertical={false} />

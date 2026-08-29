@@ -7,6 +7,7 @@ const supabase = supabaseAdmin();
 const preset = imagePresets['simpson-headshot'];
 const batchSize = Number(process.env.HEADSHOT_BATCH_SIZE ?? 20);
 const bucket = 'avatars';
+const requestedNames = process.argv.slice(2).filter(Boolean);
 
 if (!process.env.FAL_KEY) throw new Error('FAL_KEY must be set in frontend/.env.local.');
 fal.config({ credentials: process.env.FAL_KEY });
@@ -41,12 +42,18 @@ async function update(fullName, values) {
   if (error) throw error;
 }
 
-const { data: insiders, error: readError } = await supabase
+let insidersQuery = supabase
   .from('insiders')
   .select('full_name')
-  .is('headshot_status', null)
-  .order('full_name')
-  .limit(batchSize);
+  .order('full_name');
+
+if (requestedNames.length) {
+  insidersQuery = insidersQuery.in('full_name', requestedNames);
+} else {
+  insidersQuery = insidersQuery.is('headshot_status', null).limit(batchSize);
+}
+
+const { data: insiders, error: readError } = await insidersQuery;
 if (readError) throw readError;
 
 for (const insider of insiders ?? []) {

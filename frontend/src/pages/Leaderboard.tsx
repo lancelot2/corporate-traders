@@ -12,11 +12,11 @@ import { ErrorState } from '../components/ErrorState';
 
 function Logo() {
   return (
-    <div className="grid h-[4.5rem] w-[4.5rem] place-items-center rounded-full bg-btn">
+    <div className="grid h-[4.5rem] w-[4.5rem] place-items-center rounded-full border-2 border-black bg-[#FED90F]">
       <svg viewBox="0 0 32 32" className="h-9 w-9" aria-hidden>
-        <rect x="6" y="18" width="4.5" height="8" rx="1.2" fill="var(--btn-fg)" />
-        <rect x="13.75" y="12" width="4.5" height="14" rx="1.2" fill="var(--btn-fg)" />
-        <rect x="21.5" y="6" width="4.5" height="20" rx="1.2" fill="var(--btn-fg)" />
+        <rect x="6" y="18" width="4.5" height="8" rx="1.2" fill="#000" />
+        <rect x="13.75" y="12" width="4.5" height="14" rx="1.2" fill="#000" />
+        <rect x="21.5" y="6" width="4.5" height="20" rx="1.2" fill="#000" />
       </svg>
     </div>
   );

@@ -5,11 +5,11 @@ import { useWatchlist } from '../state/watchlist';
 
 function Mark() {
   return (
-    <span className="grid h-9 w-9 place-items-center rounded-xl bg-btn">
+    <span className="grid h-9 w-9 place-items-center rounded-xl border-2 border-black bg-[#FED90F]">
       <svg viewBox="0 0 32 32" className="h-[1.05rem] w-[1.05rem]" aria-hidden>
-        <rect x="6" y="18" width="4.5" height="8" rx="1.2" fill="var(--btn-fg)" />
-        <rect x="13.75" y="12" width="4.5" height="14" rx="1.2" fill="var(--btn-fg)" />
-        <rect x="21.5" y="6" width="4.5" height="20" rx="1.2" fill="var(--btn-fg)" />
+        <rect x="6" y="18" width="4.5" height="8" rx="1.2" fill="#000" />
+        <rect x="13.75" y="12" width="4.5" height="14" rx="1.2" fill="#000" />
+        <rect x="21.5" y="6" width="4.5" height="20" rx="1.2" fill="#000" />
       </svg>
     </span>
   );
@@ -50,7 +50,7 @@ export function DesktopNav() {
           <NavItem to="/discover">Discover</NavItem>
           <NavItem to="/watchlist" badge={count}>Watching</NavItem>
         </nav>
-        <NavLink to="/discover" className="rounded-xl bg-btn px-4 py-2.5 text-[0.82rem] font-semibold text-btn-fg transition-transform hover:scale-[1.02] active:scale-[0.98]">
+        <NavLink to="/discover" className="rounded-xl border-2 border-black bg-[#FED90F] px-4 py-2.5 text-[0.82rem] font-semibold text-black shadow-[3px_3px_0_#07070a] transition-transform hover:-translate-y-0.5 active:translate-y-0 active:shadow-none">
           Explore insiders
         </NavLink>
       </div>
