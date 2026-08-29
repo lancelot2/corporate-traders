@@ -10,12 +10,14 @@ const SIZES = {
   sm: 'h-11 w-11 text-[0.85rem]',
   md: 'h-9 w-9 text-[0.7rem]',
   lg: 'h-14 w-14 text-lg',
+  xl: 'h-28 w-28 text-[2rem]',
 };
 
 const BADGE = {
   sm: 'h-[1.15rem] w-[1.15rem] rounded-[0.4rem] text-[0.62rem] -bottom-0.5 -right-0.5',
   md: 'h-4 w-4 rounded-[0.35rem] text-[0.55rem] -bottom-0.5 -right-0.5',
   lg: 'h-6 w-6 rounded-lg text-[0.75rem] -bottom-1 -right-1',
+  xl: 'h-8 w-8 rounded-xl text-base -bottom-1 -right-1',
 };
 
 export function Avatar({

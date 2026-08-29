@@ -1,15 +1,17 @@
 import { useMemo } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useDirectors } from '../state/directors';
-import { formatDate, formatInt, formatTradeValue, initials } from '../lib/format';
-import { heroGradient } from '../lib/tint';
+import { usePriceHistory } from '../state/priceHistory';
+import { formatDate, formatInt, formatTradeValue } from '../lib/format';
 import { bioFor, netSharesHeld } from '../lib/insight';
 import { firstNameOf } from '../lib/names';
 import { useWatchlist } from '../state/watchlist';
+import { Avatar } from '../components/Avatar';
 import { BlueCheck } from '../components/BlueCheck';
 import { WatcherCount } from '../components/WatcherCount';
 import { LoadingState } from '../components/LoadingState';
 import { ErrorState } from '../components/ErrorState';
+import { ChartLegend, StockTradeChart, type TradeMarker } from '../components/StockTradeChart';
 import { TradeTable } from '../components/TradeTable';
 import { NotFound } from './NotFound';
 
@@ -37,6 +39,21 @@ export function DirectorDetail() {
     return directorsState.directors.find((d) => d.id === id);
   }, [directorsState, id]);
 
+  const priceHistoryState = usePriceHistory(director?.organizationId);
+
+  const chartTrades = useMemo((): TradeMarker[] => {
+    if (!director || priceHistoryState.status !== 'ready') return [];
+    const priceByDate = new Map(priceHistoryState.prices.map((p) => [p.date, p.price]));
+    return director.trades
+      .filter((t) => t.organizationId === director.organizationId && priceByDate.has(t.date))
+      .map((t) => ({
+        date: t.date,
+        type: t.type,
+        shares: t.shares,
+        price: priceByDate.get(t.date)!,
+      }));
+  }, [director, priceHistoryState]);
+
   if (directorsState.status === 'loading') return <LoadingState label="Loading profile…" />;
   if (directorsState.status === 'error') {
     return <ErrorState onRetry={directorsState.refetch} message="Couldn't load insider data." />;
@@ -45,57 +62,72 @@ export function DirectorDetail() {
 
   const watched = isWatched(director.id);
   const netShares = netSharesHeld(director);
+  const showEntriesExits = priceHistoryState.status === 'ready' && chartTrades.length > 0;
 
   return (
     <>
       <main className="flex-1 pb-28">
-        {/* hero */}
-        <div className="px-4 pt-4">
-          <div
-            className="relative flex h-60 items-end overflow-hidden rounded-[1.75rem]"
-            style={{ backgroundImage: heroGradient(director.id) }}
+        {/* header */}
+        <div className="px-5 pt-4">
+          <button
+            type="button"
+            onClick={() => navigate(-1)}
+            aria-label="Back"
+            className="grid h-9 w-9 place-items-center rounded-full border border-line bg-surface text-ink-soft transition-colors hover:bg-surface-2"
           >
-            <span
-              aria-hidden
-              className="pointer-events-none absolute -right-4 -top-8 select-none text-[13rem] font-bold leading-none text-white/12"
-            >
-              {initials(director.name)}
-            </span>
-            <button
-              type="button"
-              onClick={() => navigate(-1)}
-              aria-label="Back"
-              className="absolute left-4 top-4 grid h-9 w-9 place-items-center rounded-full bg-black/30 text-white backdrop-blur-md transition-colors hover:bg-black/45"
-            >
-              <svg viewBox="0 0 16 16" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth={2} aria-hidden>
-                <path d="M10 3.5L5.5 8l4.5 4.5" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-            </button>
-            <span className="absolute right-4 top-4 rounded-full bg-black/25 px-2.5 py-1 text-[0.68rem] font-semibold uppercase tracking-wide text-white backdrop-blur-md">
-              {director.sector}
-            </span>
-            <div className="relative p-5">
-              <h1 className="text-[2rem] font-bold leading-none tracking-tight text-white drop-shadow-sm">
-                {director.name}
-              </h1>
+            <svg viewBox="0 0 16 16" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth={2} aria-hidden>
+              <path d="M10 3.5L5.5 8l4.5 4.5" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </button>
+
+          <div className="mt-4 flex items-center gap-4">
+            <Avatar
+              name={director.name}
+              seed={director.id}
+              size="xl"
+              company={director.company}
+              ticker={director.ticker}
+              photoUrl={director.headshotUrl}
+            />
+            <div className="min-w-0 flex-1">
+              <div className="flex items-start gap-1.5">
+                <h1 className="text-[2rem] font-bold leading-tight tracking-tight text-ink">
+                  {director.name}
+                </h1>
+                <BlueCheck className="mt-2 h-5 w-5 shrink-0" />
+              </div>
+              <div className="mt-1 flex flex-wrap items-center gap-x-1.5 text-[0.85rem]">
+                <span className="text-ink-soft">
+                  {director.title} · {director.company}
+                </span>
+                <span className="tnum text-ink-faint">
+                  · {formatInt(director.tradeCount)} trades · {formatTradeValue(director.totalTradeValueUsd)} traded
+                </span>
+              </div>
             </div>
           </div>
         </div>
 
         <div className="px-5">
-          {/* attribution */}
-          <div className="mt-4 flex items-center gap-2 text-[0.9rem]">
-            <span className="text-ink-soft">
-              {director.title} · {director.company}
-            </span>
-          </div>
-          <div className="mt-1.5 flex items-center gap-1.5 text-[0.85rem] text-ink-soft">
-            <span>Tracked by Insider Index</span>
-            <BlueCheck className="h-4 w-4" />
-          </div>
+          {/* stock price with entries and exits */}
+          {showEntriesExits && priceHistoryState.status === 'ready' && (
+            <section className="mt-6">
+              <SectionTitle>Entries &amp; exits</SectionTitle>
+              <p className="-mt-1 mb-4 text-[0.88rem] leading-relaxed text-ink-soft">
+                Each trade plotted on {director.company}’s share price. Buys in the dips and
+                sells on the peaks are the signature of good timing.
+              </p>
+              <div className="rounded-2xl border border-line bg-surface p-4">
+                <StockTradeChart data={priceHistoryState.prices} trades={chartTrades} />
+                <div className="mt-3 border-t border-line pt-3">
+                  <ChartLegend />
+                </div>
+              </div>
+            </section>
+          )}
 
           {/* activity tiles */}
-          <section className="mt-7">
+          <section className="mt-8">
             <SectionTitle>Activity</SectionTitle>
             <div className="mb-2.5 flex items-center justify-between rounded-2xl border border-line bg-surface px-4 py-3.5">
               <div>

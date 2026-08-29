@@ -50,6 +50,14 @@ export function formatDateShort(iso: string): string {
   });
 }
 
+export function formatMonthYear(iso: string): string {
+  return new Date(iso + 'T00:00:00Z').toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'short',
+    timeZone: 'UTC',
+  });
+}
+
 export function initials(name: string): string {
   return name
     .split(/\s+/)

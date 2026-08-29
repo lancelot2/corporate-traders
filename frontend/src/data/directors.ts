@@ -14,6 +14,7 @@ export interface Trade {
   pricePerShare: number | null;
   value: number | null; // disclosed dollar value; null (never 0) when undisclosed
   rawTransactionType: string;
+  organizationId: string; // the org this specific trade was made at
 }
 
 export interface Director {
@@ -21,6 +22,7 @@ export interface Director {
   name: string;
   title: string;
   company: string;
+  organizationId: string; // org of the insider's most recent trade
   ticker: string;
   sector: string;
   sectorGroup: string;
@@ -141,6 +143,7 @@ export async function fetchDirectors(): Promise<Director[]> {
         pricePerShare: row.price_per_share,
         value,
         rawTransactionType: row.transaction_type ?? 'Unknown',
+        organizationId: row.organization_id,
       };
     });
 
@@ -149,6 +152,7 @@ export async function fetchDirectors(): Promise<Director[]> {
       name: normalizeFullName(insider.full_name),
       title: PLACEHOLDER_TITLE,
       company: primaryOrg.name,
+      organizationId: primaryOrg.id,
       ticker: primaryOrg.ticker,
       sector: primaryOrg.sector,
       sectorGroup: primaryOrg.sector_group,
