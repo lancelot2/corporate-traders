@@ -1,11 +1,11 @@
 # Netlify build + hosting config for the Insider Index frontend (Vite + React).
-# The app lives in frontend/; these values mirror the working dashboard settings
-# so the build configuration is version-controlled.
+# The app lives in frontend/; `base` points there and `publish` is resolved
+# relative to `base` (so "dist" -> frontend/dist).
 
 [build]
   base = "frontend"
   command = "npm run build"
-  publish = "frontend/dist"
+  publish = "dist"
 
 [build.environment]
   NODE_VERSION = "20"
