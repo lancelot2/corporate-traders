@@ -1,0 +1,33 @@
+{
+  "cli_version": "0.10.3",
+  "checkpoint_id": "01M172G922352ZG1CDZ1RHPZXX",
+  "strategy": "manual-commit",
+  "branch": "main",
+  "checkpoints_count": 19,
+  "files_touched": [
+    "frontend/README.md",
+    "frontend/package.json",
+    "frontend/scripts/find-supabase-headshots.mjs",
+    "frontend/scripts/generate-supabase-headshots.mjs",
+    "frontend/scripts/process-supabase-headshot-batch.mjs",
+    "frontend/scripts/reset-wikimedia-headshots.mjs",
+    "frontend/scripts/serpapi-google-images.mjs",
+    "frontend/scripts/wikimedia-commons.mjs"
+  ],
+  "sessions": [
+    {
+      "metadata": "/0/metadata.json",
+      "transcript": "/0/full.jsonl",
+      "compact_transcript": "/0/transcript.jsonl",
+      "content_hash": "/0/content_hash.txt",
+      "prompt": "/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 455404,
+    "cache_creation_tokens": 0,
+    "cache_read_tokens": 17378304,
+    "output_tokens": 86628,
+    "api_call_count": 188
+  }
+}
