@@ -1,9 +1,9 @@
 import { Link } from 'react-router-dom';
-import type { Director } from '../data/mockDirectors';
+import type { Director } from '../data/directors';
 import type { SortMode } from '../lib/sort';
-import { formatCount, formatUsdCompact } from '../lib/format';
+import { formatDateShort, formatTradeValue } from '../lib/format';
 import { Avatar } from './Avatar';
-import { ReturnValue } from './ReturnValue';
+import { WatcherCount } from './WatcherCount';
 
 function Chevron() {
   return (
@@ -14,13 +14,11 @@ function Chevron() {
 }
 
 function DominantStat({ director, mode }: { director: Director; mode: SortMode }) {
-  if (mode === 'performance') {
-    return <ReturnValue value={director.absoluteReturnPct} className="text-[0.95rem]" showCaret={false} />;
+  if (mode === 'popularity') {
+    return <WatcherCount count={director.watcherCount} className="text-[0.95rem]" hideLabelOnMobile />;
   }
   const value =
-    mode === 'amount'
-      ? formatUsdCompact(director.totalTradeValueUsd)
-      : `${formatCount(director.watcherCount)} watching`;
+    mode === 'amount' ? formatTradeValue(director.totalTradeValueUsd) : formatDateShort(director.lastTradeDate);
   return <div className="tnum text-[0.95rem] font-semibold text-ink">{value}</div>;
 }
 
@@ -47,6 +45,7 @@ export function DirectorRow({
         size="sm"
         company={director.company}
         ticker={director.ticker}
+        photoUrl={director.headshotUrl}
       />
       <div className="min-w-0 flex-1">
         <div className="truncate text-[0.78rem] font-medium text-ink-soft">{director.title}</div>

@@ -1,7 +1,6 @@
 import { useMemo, useState } from 'react';
-import type { Trade } from '../data/mockDirectors';
+import type { Trade } from '../data/directors';
 import { formatDateShort, formatInt, formatUsd } from '../lib/format';
-import { ReturnValue } from './ReturnValue';
 
 function TypeBadge({ type }: { type: Trade['type'] }) {
   const isBuy = type === 'buy';
@@ -46,7 +45,7 @@ export function TradeTable({ trades }: { trades: Trade[] }) {
               <th className="px-2.5 py-3">Type</th>
               <th className="px-2.5 py-3 text-right">Shares</th>
               <th className="px-2.5 py-3 text-right">Price</th>
-              <th className="px-2.5 py-3 text-right">Return</th>
+              <th className="px-2.5 py-3 text-right">Value</th>
             </tr>
           </thead>
           <tbody>
@@ -57,9 +56,11 @@ export function TradeTable({ trades }: { trades: Trade[] }) {
                   <TypeBadge type={trade.type} />
                 </td>
                 <td className="tnum px-2.5 py-3 text-right font-medium text-ink">{formatInt(trade.shares)}</td>
-                <td className="tnum px-2.5 py-3 text-right font-medium text-ink">{formatUsd(trade.price)}</td>
-                <td className="px-2.5 py-3 text-right">
-                  <ReturnValue value={trade.returnPct} />
+                <td className="tnum px-2.5 py-3 text-right font-medium text-ink">
+                  {trade.pricePerShare != null ? formatUsd(trade.pricePerShare) : '—'}
+                </td>
+                <td className="tnum px-2.5 py-3 text-right font-medium text-ink">
+                  {trade.value != null ? formatUsd(trade.value) : '—'}
                 </td>
               </tr>
             ))}

@@ -1,9 +1,11 @@
+import { useState } from 'react';
 import { initials } from '../lib/format';
 import { avatarTint } from '../lib/tint';
 import { CompanyLogo } from './CompanyLogo';
 
-// Circular, initials-based avatar (no external images), tinted per insider.
-// When a company is supplied, its mark is badged into the bottom-right corner.
+// Photo-based when a headshot URL is available, otherwise an initials-based
+// tinted circle. When a company is supplied, its mark is badged into the
+// bottom-right corner.
 const SIZES = {
   sm: 'h-11 w-11 text-[0.85rem]',
   md: 'h-9 w-9 text-[0.7rem]',
@@ -22,26 +24,38 @@ export function Avatar({
   size = 'sm',
   company,
   ticker,
+  photoUrl,
 }: {
   name: string;
   seed: string;
   size?: keyof typeof SIZES;
   company?: string;
   ticker?: string;
+  photoUrl?: string | null;
 }) {
+  const [photoFailed, setPhotoFailed] = useState(false);
   const tint = avatarTint(seed);
-  const circle = (
-    <div
-      aria-hidden
-      className={`grid place-items-center rounded-full font-semibold text-ink ring-1 ring-inset ring-black/5 ${SIZES[size]}`}
-      style={{
-        backgroundColor: 'var(--surface-2)',
-        backgroundImage: `linear-gradient(0deg, ${tint}, ${tint})`,
-      }}
-    >
-      {initials(name)}
-    </div>
-  );
+  const circle =
+    photoUrl && !photoFailed ? (
+      <img
+        src={photoUrl}
+        alt=""
+        aria-hidden
+        onError={() => setPhotoFailed(true)}
+        className={`rounded-full object-cover ring-1 ring-inset ring-black/5 ${SIZES[size]}`}
+      />
+    ) : (
+      <div
+        aria-hidden
+        className={`grid place-items-center rounded-full font-semibold text-ink ring-1 ring-inset ring-black/5 ${SIZES[size]}`}
+        style={{
+          backgroundColor: 'var(--surface-2)',
+          backgroundImage: `linear-gradient(0deg, ${tint}, ${tint})`,
+        }}
+      >
+        {initials(name)}
+      </div>
+    );
 
   if (!company || !ticker) return <div className="shrink-0">{circle}</div>;
 

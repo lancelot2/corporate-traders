@@ -1,4 +1,4 @@
-import { SECTOR_GROUPS } from '../data/mockDirectors';
+import { SECTOR_GROUPS } from '../data/directors';
 
 export type SectorValue = 'all' | (typeof SECTOR_GROUPS)[number];
 

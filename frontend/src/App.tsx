@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { BrowserRouter, Route, Routes, useLocation } from 'react-router-dom';
 import { WatchlistProvider } from './state/watchlist';
+import { DirectorsProvider } from './state/directors';
 import { AppShell } from './components/AppShell';
 import { Leaderboard } from './pages/Leaderboard';
 import { DirectorDetail } from './pages/DirectorDetail';
@@ -20,19 +21,21 @@ function ScrollToTop() {
 export default function App() {
   return (
     <BrowserRouter>
-      <WatchlistProvider>
-        <ScrollToTop />
-        <AppShell>
-          <DesktopNav />
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/discover" element={<Leaderboard />} />
-            <Route path="/director/:id" element={<DirectorDetail />} />
-            <Route path="/watchlist" element={<Watchlist />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </AppShell>
-      </WatchlistProvider>
+      <DirectorsProvider>
+        <WatchlistProvider>
+          <ScrollToTop />
+          <AppShell>
+            <DesktopNav />
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/discover" element={<Leaderboard />} />
+              <Route path="/director/:id" element={<DirectorDetail />} />
+              <Route path="/watchlist" element={<Watchlist />} />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </AppShell>
+        </WatchlistProvider>
+      </DirectorsProvider>
     </BrowserRouter>
   );
 }

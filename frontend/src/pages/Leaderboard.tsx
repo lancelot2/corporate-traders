@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { directors } from '../data/mockDirectors';
+import { useDirectors } from '../state/directors';
 import { rankDirectors, type SortMode } from '../lib/sort';
 import { SortPills } from '../components/SortPills';
 import { SearchField } from '../components/SearchField';
@@ -7,6 +7,8 @@ import { SectorFilter, type SectorValue } from '../components/SectorFilter';
 import { DirectorRow } from '../components/DirectorRow';
 import { BlueCheck } from '../components/BlueCheck';
 import { BottomNav } from '../components/BottomNav';
+import { LoadingState } from '../components/LoadingState';
+import { ErrorState } from '../components/ErrorState';
 
 function Logo() {
   return (
@@ -29,9 +31,12 @@ function ControlLabel({ children }: { children: string }) {
 }
 
 export function Leaderboard() {
-  const [mode, setMode] = useState<SortMode>('performance');
+  const directorsState = useDirectors();
+  const [mode, setMode] = useState<SortMode>('amount');
   const [query, setQuery] = useState('');
   const [sector, setSector] = useState<SectorValue>('all');
+
+  const directors = directorsState.status === 'ready' ? directorsState.directors : [];
 
   const results = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -45,7 +50,7 @@ export function Leaderboard() {
       return inSector && inQuery;
     });
     return rankDirectors(filtered, mode);
-  }, [query, sector, mode]);
+  }, [directors, query, sector, mode]);
 
   const isFiltered = query.trim() !== '' || sector !== 'all';
 
@@ -67,7 +72,7 @@ export function Leaderboard() {
             <svg viewBox="0 0 16 16" className="h-3.5 w-3.5" fill="currentColor" aria-hidden>
               <path d="M8 1a7 7 0 100 14A7 7 0 008 1zm.9 10.4H7.1V7h1.8v4.4zM8 5.7a1 1 0 110-2 1 1 0 010 2z" />
             </svg>
-            Illustrative mock data
+            Real disclosed insider trades
           </span>
         </header>
 
@@ -88,54 +93,64 @@ export function Leaderboard() {
           </div>
         </div>
 
-        {/* count */}
-        <div className="mt-6 mb-1 text-[0.82rem] font-medium text-ink-faint">
-          {results.length} {results.length === 1 ? 'insider' : 'insiders'}
-          {isFiltered ? ` of ${directors.length}` : ''}
-        </div>
+        {directorsState.status === 'loading' && <LoadingState label="Loading insiders…" />}
+        {directorsState.status === 'error' && (
+          <ErrorState onRetry={directorsState.refetch} message="Couldn't load insider data." />
+        )}
 
-        {/* list */}
-        {results.length ? (
-          <ol className="md:grid md:grid-cols-2 md:gap-x-5">
-            {results.map((director, i) => (
-              <li
-                key={director.id}
-                style={{
-                  animation: 'fade-rise 0.4s cubic-bezier(0.22,1,0.36,1) both',
-                  animationDelay: `${Math.min(i, 12) * 28}ms`,
-                }}
-              >
-                <DirectorRow director={director} rank={i + 1} mode={mode} />
-              </li>
-            ))}
-          </ol>
-        ) : (
-          <div className="flex flex-col items-center py-14 text-center">
-            <div className="grid h-14 w-14 place-items-center rounded-full bg-surface-2">
-              <svg viewBox="0 0 24 24" className="h-6 w-6 text-ink-faint" fill="none" stroke="currentColor" strokeWidth={2} aria-hidden>
-                <circle cx="11" cy="11" r="6.5" />
-                <path d="M20 20l-3.6-3.6" strokeLinecap="round" />
-              </svg>
+        {directorsState.status === 'ready' && (
+          <>
+            {/* count */}
+            <div className="mt-6 mb-1 text-[0.82rem] font-medium text-ink-faint">
+              {results.length} {results.length === 1 ? 'insider' : 'insiders'}
+              {isFiltered ? ` of ${directors.length}` : ''}
             </div>
-            <p className="mt-4 max-w-[16rem] text-[0.95rem] text-ink-soft">
-              No insiders match your search.
-            </p>
-            <button
-              type="button"
-              onClick={() => {
-                setQuery('');
-                setSector('all');
-              }}
-              className="mt-5 rounded-full bg-surface-2 px-4 py-2 text-[0.88rem] font-semibold text-ink"
-            >
-              Clear filters
-            </button>
-          </div>
+
+            {/* list */}
+            {results.length ? (
+              <ol className="md:grid md:grid-cols-2 md:gap-x-5">
+                {results.map((director, i) => (
+                  <li
+                    key={director.id}
+                    style={{
+                      animation: 'fade-rise 0.4s cubic-bezier(0.22,1,0.36,1) both',
+                      animationDelay: `${Math.min(i, 12) * 28}ms`,
+                    }}
+                  >
+                    <DirectorRow director={director} rank={i + 1} mode={mode} />
+                  </li>
+                ))}
+              </ol>
+            ) : (
+              <div className="flex flex-col items-center py-14 text-center">
+                <div className="grid h-14 w-14 place-items-center rounded-full bg-surface-2">
+                  <svg viewBox="0 0 24 24" className="h-6 w-6 text-ink-faint" fill="none" stroke="currentColor" strokeWidth={2} aria-hidden>
+                    <circle cx="11" cy="11" r="6.5" />
+                    <path d="M20 20l-3.6-3.6" strokeLinecap="round" />
+                  </svg>
+                </div>
+                <p className="mt-4 max-w-[16rem] text-[0.95rem] text-ink-soft">
+                  No insiders match your search.
+                </p>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setQuery('');
+                    setSector('all');
+                  }}
+                  className="mt-5 rounded-full bg-surface-2 px-4 py-2 text-[0.88rem] font-semibold text-ink"
+                >
+                  Clear filters
+                </button>
+              </div>
+            )}
+          </>
         )}
 
         <p className="mt-7 text-center text-[0.72rem] leading-relaxed text-ink-faint">
-          Numbers for illustrative purposes only. Not actual performance data,
-          not investment advice, and not a trading product.
+          Trades, companies, and people are real SEC-disclosed data. Watcher counts are
+          simulated estimates, not real activity. Titles are shown as a general
+          placeholder, and not every trade discloses a dollar value.
         </p>
       </main>
 

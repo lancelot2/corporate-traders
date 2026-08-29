@@ -1,20 +1,23 @@
+import { useMemo } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { getDirector } from '../data/mockDirectors';
-import { formatDate, formatInt, formatUsdCompact, formatUsdWhole, initials } from '../lib/format';
+import { useDirectors } from '../state/directors';
+import { formatDate, formatInt, formatTradeValue, initials } from '../lib/format';
 import { heroGradient } from '../lib/tint';
-import { bioFor, currentHoldings } from '../lib/insight';
+import { bioFor, netSharesHeld } from '../lib/insight';
+import { firstNameOf } from '../lib/names';
 import { useWatchlist } from '../state/watchlist';
 import { BlueCheck } from '../components/BlueCheck';
-import { ReturnValue } from '../components/ReturnValue';
-import { ChartLegend, StockTradeChart } from '../components/StockTradeChart';
+import { WatcherCount } from '../components/WatcherCount';
+import { LoadingState } from '../components/LoadingState';
+import { ErrorState } from '../components/ErrorState';
 import { TradeTable } from '../components/TradeTable';
 import { NotFound } from './NotFound';
 
-function PerfTile({ label, value }: { label: string; value: number }) {
+function ActivityTile({ label, value }: { label: string; value: number }) {
   return (
     <div className="flex flex-col gap-1.5 rounded-2xl border border-line bg-surface px-3 py-3.5">
       <span className="text-[0.72rem] font-medium text-ink-soft">{label}</span>
-      <ReturnValue value={value} className="text-[1.15rem]" />
+      <span className="tnum text-[1.15rem] font-semibold text-ink">{formatInt(value)}</span>
     </div>
   );
 }
@@ -26,12 +29,22 @@ function SectionTitle({ children }: { children: React.ReactNode }) {
 export function DirectorDetail() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const director = id ? getDirector(id) : undefined;
+  const directorsState = useDirectors();
   const { isWatched, toggle } = useWatchlist();
 
+  const director = useMemo(() => {
+    if (directorsState.status !== 'ready' || !id) return undefined;
+    return directorsState.directors.find((d) => d.id === id);
+  }, [directorsState, id]);
+
+  if (directorsState.status === 'loading') return <LoadingState label="Loading profile…" />;
+  if (directorsState.status === 'error') {
+    return <ErrorState onRetry={directorsState.refetch} message="Couldn't load insider data." />;
+  }
   if (!director) return <NotFound />;
+
   const watched = isWatched(director.id);
-  const holdings = currentHoldings(director);
+  const netShares = netSharesHeld(director);
 
   return (
     <>
@@ -81,39 +94,30 @@ export function DirectorDetail() {
             <BlueCheck className="h-4 w-4" />
           </div>
 
-          {/* performance tiles */}
+          {/* activity tiles */}
           <section className="mt-7">
-            <SectionTitle>Performance</SectionTitle>
+            <SectionTitle>Activity</SectionTitle>
             <div className="mb-2.5 flex items-center justify-between rounded-2xl border border-line bg-surface px-4 py-3.5">
               <div>
-                <div className="text-[0.72rem] font-medium text-ink-soft">
-                  Total current holdings
-                </div>
+                <div className="text-[0.72rem] font-medium text-ink-soft">Net shares held</div>
                 <div className="tnum mt-0.5 text-[1.55rem] font-bold leading-none text-ink">
-                  {holdings.shares > 0 ? formatUsdWhole(holdings.value) : '$0'}
+                  {netShares > 0 ? `${formatInt(netShares)} sh` : 'No net position'}
                 </div>
               </div>
               <div className="tnum text-right text-[0.78rem] text-ink-faint">
-                {holdings.shares > 0 ? (
-                  <>
-                    <div className="font-medium text-ink-soft">
-                      {formatInt(holdings.shares)} sh
-                    </div>
-                    <div>{director.ticker}</div>
-                  </>
-                ) : (
-                  <div>Position closed</div>
-                )}
+                {netShares > 0 ? <div>{director.ticker}</div> : <div>Disposals ≥ acquisitions</div>}
               </div>
             </div>
             <div className="grid grid-cols-3 gap-2.5">
-              <PerfTile label="All time" value={director.absoluteReturnPct} />
-              <PerfTile label="vs. Market" value={director.marketRelativeReturnPct} />
-              <PerfTile label="vs. Own stock" value={director.selfRelativeReturnPct} />
+              <ActivityTile label="Trades" value={director.tradeCount} />
+              <ActivityTile label="Buys" value={director.buyCount} />
+              <ActivityTile label="Sells" value={director.sellCount} />
             </div>
-            <p className="tnum mt-3 text-[0.8rem] text-ink-faint">
-              Since {formatDate(director.trackingSince)} · {formatUsdCompact(director.totalTradeValueUsd)}{' '}
-              traded · {formatInt(director.watcherCount)} watching
+            <p className="tnum mt-3 flex flex-wrap items-center gap-x-1.5 text-[0.8rem] text-ink-faint">
+              <span>
+                Since {formatDate(director.trackingSince)} · {formatTradeValue(director.totalTradeValueUsd)} traded ·
+              </span>
+              <WatcherCount count={director.watcherCount} className="text-[0.8rem]" />
             </p>
           </section>
 
@@ -121,21 +125,6 @@ export function DirectorDetail() {
           <section className="mt-8">
             <SectionTitle>About</SectionTitle>
             <p className="text-[0.95rem] leading-relaxed text-ink-soft">{bioFor(director)}</p>
-          </section>
-
-          {/* stock price with entries and exits */}
-          <section className="mt-8">
-            <SectionTitle>Entries &amp; exits</SectionTitle>
-            <p className="-mt-1 mb-4 text-[0.88rem] leading-relaxed text-ink-soft">
-              Each trade plotted on {director.company}’s share price. Buys in the dips and
-              sells on the peaks are the signature of good timing.
-            </p>
-            <div className="rounded-2xl border border-line bg-surface p-4">
-              <StockTradeChart data={director.stockPriceHistory} trades={director.trades} />
-              <div className="mt-3 border-t border-line pt-3">
-                <ChartLegend />
-              </div>
-            </div>
           </section>
 
           {/* trade history */}
@@ -148,8 +137,9 @@ export function DirectorDetail() {
           </section>
 
           <p className="mt-8 text-center text-[0.72rem] leading-relaxed text-ink-faint">
-            Numbers for illustrative purposes only. Not actual performance data,
-            not investment advice, and not a trading product.
+            Trades and companies are real, disclosed data. The watcher count above is a
+            simulated estimate, not real activity. Title is shown as a general placeholder,
+            and not every trade discloses a dollar value.
           </p>
         </div>
       </main>
@@ -170,10 +160,10 @@ export function DirectorDetail() {
               <svg viewBox="0 0 20 20" className="h-[1.1rem] w-[1.1rem]" fill="currentColor" aria-hidden>
                 <path d="M10 1.8l2.5 5.1 5.6.8-4.05 4 .95 5.6L10 14.6l-5 2.7.95-5.6-4.05-4 5.6-.8z" />
               </svg>
-              Watching {director.name.split(' ')[0]}
+              Watching {firstNameOf(director.name)}
             </>
           ) : (
-            `Watch ${director.name.split(' ')[0]}`
+            `Watch ${firstNameOf(director.name)}`
           )}
         </button>
       </div>

@@ -1,6 +1,6 @@
-// Synthetic company mark — a colored monogram tile standing in for a brand logo
-// (the companies are fictional, so there are no real logos to use). Color is
-// derived from the ticker so each company reads as a distinct little logo.
+// Synthetic company mark — a colored monogram tile standing in for a brand
+// logo (no logo_url is populated in the data yet). Color is derived from the
+// ticker so each company reads as a distinct little logo.
 const LOGO_COLORS = [
   '#5b6472', // slate — visible on both light and dark
   '#e0563a',
