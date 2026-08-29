@@ -1,3 +1,3 @@
 export function HelloWorld() {
-  return <main>Hello world!</main>
+  return <main>Hello hackathon!</main>
 }
