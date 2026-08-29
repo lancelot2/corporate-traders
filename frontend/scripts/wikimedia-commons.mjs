@@ -2,6 +2,23 @@ function plainText(value = '') {
   return value.replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim();
 }
 
+function delay(milliseconds) {
+  return new Promise((resolve) => setTimeout(resolve, milliseconds));
+}
+
+async function fetchCommons(url) {
+  for (let attempt = 0; attempt < 3; attempt++) {
+    const response = await fetch(url, {
+      headers: { 'user-agent': 'CorporateTradersHeadshotPipeline/1.0' },
+    });
+    if (response.ok || (response.status !== 429 && response.status < 500)) return response;
+
+    const retryAfter = Number(response.headers.get('retry-after'));
+    await delay(Number.isFinite(retryAfter) ? retryAfter * 1_000 : (attempt + 1) * 2_000);
+  }
+  return fetch(url, { headers: { 'user-agent': 'CorporateTradersHeadshotPipeline/1.0' } });
+}
+
 function scoreCandidate(candidate, name) {
   const words = name.toLowerCase().split(/\s+/).filter(Boolean);
   const haystack = `${candidate.title} ${candidate.description}`.toLowerCase();
@@ -26,7 +43,7 @@ export async function findHeadshotCandidates(name) {
     iiextmetadatafilter: 'Artist|Credit|LicenseShortName|LicenseUrl|UsageTerms|AttributionRequired|ImageDescription',
     origin: '*',
   });
-  const response = await fetch(`https://commons.wikimedia.org/w/api.php?${query}`);
+  const response = await fetchCommons(`https://commons.wikimedia.org/w/api.php?${query}`);
   if (!response.ok) throw new Error(`Wikimedia Commons search failed for ${name} (${response.status}).`);
   const payload = await response.json();
 

@@ -10,7 +10,10 @@
     "preview": "vite preview",
     "generate:image": "node scripts/generate-image.mjs",
     "find:headshots": "node scripts/find-headshots.mjs",
-    "supabase:find-headshots": "node scripts/find-supabase-headshots.mjs"
+    "supabase:find-headshots": "node scripts/find-supabase-headshots.mjs",
+    "supabase:reset-wikimedia-headshots": "node scripts/reset-wikimedia-headshots.mjs",
+    "supabase:generate-headshots": "node scripts/generate-supabase-headshots.mjs",
+    "supabase:process-headshot-batch": "node scripts/process-supabase-headshot-batch.mjs"
   },
   "dependencies": {
     "@base-ui/react": "^1.7.0",
