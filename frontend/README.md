@@ -57,9 +57,9 @@ the resulting asset is saved as `public/generated/elena-cho.png` (or `.jpg`).
 
 ### Public-figure headshots
 
-Use the Wikimedia Commons candidate finder before generating a public figure's
-headshot. It writes the original image URL and available attribution/license
-metadata to a review file; review the candidates before selecting one.
+Use the Google Images finder before generating a public figure's headshot. It
+uses SerpAPI and writes the direct image URL plus its originating-page URL to a
+review file; review the result before selecting one.
 
 ```bash
 cp headshots.people.example.json people.json
@@ -70,7 +70,7 @@ npm run find:headshots -- ./people.json
 When a source is approved, pass its `sourceUrl` into the headshot preset:
 
 ```bash
-npm run generate:image -- --preset simpson-headshot --input "https://commons.wikimedia.org/example-source.jpg" --output person-name
+npm run generate:image -- --preset simpson-headshot --input "https://example.com/source-image.jpg" --output person-name
 ```
 
 Do not use this workflow to imply endorsement or to misrepresent a person. Keep
@@ -81,17 +81,42 @@ remain available.
 
 For the production `public.insiders` table, first execute
 [`scripts/sql/add-insider-headshot-columns.sql`](scripts/sql/add-insider-headshot-columns.sql)
-in the Supabase SQL Editor. Then use the service-role credentials in
-`frontend/.env.local` and run:
+in the Supabase SQL Editor. Then use the service-role credentials and SerpAPI
+key in `frontend/.env.local` and run:
+
+```env
+SUPABASE_URL=https://your-project.supabase.co
+SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
+SERPAPI_KEY=your_serpapi_key
+```
 
 ```bash
 npm run supabase:find-headshots
 ```
 
-The command reads `full_name` directly from rows without a source image,
-selects a Wikimedia Commons candidate, and saves the candidate list, source
-URL, and license metadata back to the same insider row with a
+The command reads `full_name` directly from five rows whose headshot status is
+still unset (override this with `HEADSHOT_BATCH_SIZE`), selects the first
+Google Images result through SerpAPI, and saves the source image URL and
+originating-page URL back to the same insider row with a
 `source_needs_review` status. It does not call fal or generate an image.
+
+To discard all previous Wikimedia-derived source data and make those rows
+eligible for SerpAPI discovery again:
+
+```bash
+npm run supabase:reset-wikimedia-headshots
+```
+
+After reviewing a source, change its `headshot_status` to `source_approved`.
+Then generate and upload its Simpsons-style avatar to the public `avatars`
+bucket with a `<full_name>.jpg` filename:
+
+```bash
+npm run supabase:generate-headshots
+```
+
+The command saves the public Storage URL to both `avatar_url` and
+`headshot_generated_url`, then marks the row `generated`.
 
 ## Screens
 
